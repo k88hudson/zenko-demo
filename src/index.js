@@ -129,12 +129,18 @@ const fields = [
   },
   {
     label: 'CTR',
+    key: 'ctr',
     raw: function (row) {
       return row.clicks / row.impressions;
     },
     format: function (row) {
       const ctr = row.clicks / row.impressions;
       const formatted = `${Math.round(ctr * 10000000) / 100000}%`;
+      const percentage = (ctr * 1000 - 2)/2;
+      let level = 2;
+      if (percentage < 0.25) level = 1;
+      if (percentage > 0.75) level = 3;
+      return <span className={'ctr ctr-' + level} >{formatted}</span>;
     }
   },
   {
@@ -165,7 +171,7 @@ function getFieldByKey(key) {
   return result;
 }
 
-const App = React.createClass({
+const Campaign = React.createClass({
   getInitialState: function () {
     return Object.assign({}, api.campaign(), {
       sortBy: 'date',
@@ -178,7 +184,6 @@ const App = React.createClass({
     sortOrder = sortOrder || 1;
 
     const getValue = getFieldByKey(sortBy).raw;
-
     return rows.sort(function (x, y) {
       return (getValue(x) - getValue(y)) * sortOrder;
     });
@@ -204,7 +209,7 @@ const App = React.createClass({
 
     return (<div>
       <header>
-        <h1><a className="breadcrumbs" href="">Campaigns</a> {this.state.title}</h1>
+        <h1><Link className="breadcrumbs" to="/">Campaigns</Link> {this.state.title}</h1>
       </header>
       <main>
         <div className="filters">
@@ -240,19 +245,26 @@ const App = React.createClass({
         </div>
         <table>
           <thead>
-            <th style={{display: 'none'}} className="settings">
-              <span onClick={() => this.setState({showMenu: !this.state.showMenu})} className="ion-android-settings" />
-              <ul className="menu" hidden={!this.state.showMenu}>
-                <li>Option</li>
-              </ul>
-            </th>
             <tr>
+              <th className="settings">
+                <button  onClick={() => this.setState({showMenu: !this.state.showMenu})}><span className="ion-android-settings" /></button>
+                <ul className="menu" hidden={!this.state.showMenu}>
+                  <li><input type="checkbox" checked /> Date</li>
+                  <li><input type="checkbox" checked /> Impressions</li>
+                  <li><input type="checkbox" checked /> Clicks</li>
+                  <li><input type="checkbox" checked /> CTR</li>
+                  <li><input type="checkbox" checked /> Pinned</li>
+                  <li><input type="checkbox" checked /> Blocked</li>
+                  <li><input type="checkbox" /> Engagement</li>
+                </ul>
+              </th>
               {fields.map(field => <th onClick={() => this.onFieldHeaderClick(field)}>{field.label} {this.getCarrot(field)}</th>)}
             </tr>
           </thead>
           <tbody>
             {rows.map(row => {
               return (<tr>
+                <td />
                 {fields.map(field => <td>{field.format(row)}</td>)}
               </tr>);
             })}
@@ -263,4 +275,49 @@ const App = React.createClass({
   }
 });
 
-ReactDOM.render(<App />, document.getElementById('app'));
+const App = React.createClass({
+  render: function () {
+    return this.props.children;
+  }
+});
+
+const NotFound = React.createClass({
+  render: function () {
+    return <div>404</div>;
+  }
+});
+
+const Router = require('react-router').Router;
+const Route = require('react-router').Route;
+const IndexRoute = require('react-router').IndexRoute;
+const Link = require('react-router').Link;
+
+const faker = require('faker');
+
+const Home = React.createClass({
+  render: function () {
+    const campaigns = [];
+    for (let i = 0; i < 10; i++) {
+      campaigns.push(faker.commerce.productName());
+    }
+    return (<div>
+      <header>
+        <h1>Campaigns</h1>
+      </header>
+      <main>
+        <ul className="campaign-list">
+          {campaigns.map(c => <li><Link to="campaigns">{c}</Link></li>)}
+        </ul>
+      </main>
+    </div>);
+  }
+});
+
+
+ReactDOM.render((<Router>
+  <Route path="/" component={App}>
+    <Route path="campaigns" component={Campaign}/>
+    <Route path="*" component={NotFound}/>
+    <IndexRoute component={Home} />
+  </Route>
+</Router>), document.getElementById('app'));

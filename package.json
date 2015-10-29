@@ -39,6 +39,7 @@
     "moment": "^2.10.6",
     "react": "^0.14.0",
     "react-autocomplete": "^0.1.4",
-    "react-dom": "^0.14.0"
+    "react-dom": "^0.14.0",
+    "react-router": "^1.0.0-rc3"
   }
 }
