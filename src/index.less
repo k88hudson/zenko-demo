@@ -1,0 +1,212 @@
+@darkgrey: #5C5D6F;
+@pink: lighten(#CD3A60, 10%);
+@green: lighten(#5BB65D, 10%);
+
+* {
+  box-sizing: border-box;
+  font-family: Fira Sans;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  color: @darkgrey;
+}
+
+button {
+  cursor: pointer;
+}
+
+h1 {
+  font-size: 20px;
+  margin: 0;
+  padding: 20px;
+  border-bottom: 1px solid lighten(@darkgrey, 50%);
+  .breadcrumbs {
+    color: lighten(@darkgrey, 30%);
+    font-size: 0.7em;
+    text-decoration: none;
+    &:hover {
+      color: @pink;
+    }
+    &::after {
+      font-weight: normal;
+      content: '/';
+      color: lighten(@darkgrey, 50%);
+      margin: 0 0.2em 0 0.5em;
+    }
+  }
+}
+
+nav {
+  display: none;
+  ul {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    li {
+      display: block;
+      list-style: none;
+      margin: 0;
+      width: 25%;
+      a {
+        display: block;
+        padding: 10px;
+        text-align: center;
+        background: @darkgrey;
+        color: white;
+        &:hover {
+          background: darken(@darkgrey, 10%);
+        }
+        &.active {
+          background: @pink;
+        }
+      }
+    }
+  }
+}
+
+main {
+  .filters {
+    position: relative;
+    z-index: 100;
+    padding: 10px;
+    .button-group {
+      margin-right: 10px;
+      display: inline-block;
+      button:first-child {
+        border-radius: 2px 0 0 2px;
+      }
+      button:last-child {
+        border-radius: 0 2px 2px 0;
+      }
+      button:first-child:last-child {
+        border-radius: 2px;
+      }
+    }
+    .chooser {
+      background: white;
+      color: lighten(@darkgrey, 30%);
+      border: 1px solid lighten(@darkgrey, 50%);
+      padding: 8px 18px;
+      margin-right: -1px;
+      margin-bottom: 5px;
+      font-size: 14px;
+      position: relative;
+      cursor: pointer;
+      &:hover {
+        border: 1px solid @pink;
+        z-index: 1;
+      }
+      .content {
+        color: @pink;
+      }
+      &.icon {
+        padding: 8px 13px;
+      }
+      &.pink {
+        background: @pink;
+        color: white;
+        border: 1px solid darken(@pink, 5%);
+        &:hover {
+          background: lighten(@pink, 5%);
+        }
+      }
+    }
+    .filter-input {
+      display: none;
+      input {
+        width: 100%;
+        padding: 5px;
+      }
+    }
+  }
+  table {
+    width: 100%;
+  }
+  table, td, th {
+    border-collapse: collapse;
+    text-align: left;
+  }
+  td, th {
+    padding: 10px;
+    border-bottom: 1px solid #DDD;
+    &:first-child {
+      padding-left: 27px;
+    }  
+  }
+  th {
+    position: relative;
+    background: @darkgrey;
+    border: 1px solid darken(@darkgrey, 5%);
+    color: white;
+    font-weight: normal;
+    cursor: pointer;
+    color: fade(white, 90%);
+    &:hover {
+      background: lighten(@darkgrey, 5%);
+    }
+    .carrot {
+      background: none;
+      color: inherit;
+      font-size: 16px;
+      font-family: inherit;
+      border: none;
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+      width: 40px;
+      &:focus {
+        outline: none;
+      }
+      > span {
+        opacity: 0;
+      }
+      &.selected > span, {
+        opacity: 1;
+      }
+    }
+    &:hover {
+      color: white;
+      .carrot > span {
+        opacity: 0.5;
+      }
+      .carrot.selected > span {
+        opacity: 1;
+      }
+    }
+  }
+  .settings {
+    width: 45px;
+    background: @pink;
+    border-color: @pink;
+    color: white;
+    text-align: center;
+    position: relative;
+    .menu {
+      background: @pink;
+      position: absolute;
+      top: 100%;
+      left: -1px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      z-index: 1;
+      li {
+        margin: 0;
+        padding: 10px;
+      }
+    }
+  }
+  .delivery {
+    background: @green;
+    color: white;
+    border-bottom-color: darken(@green, 10%);
+  }
+  .category {
+    display: block;
+    color: lighten(@darkgrey, 30%);
+    font-size: 0.8em;
+  }
+}
