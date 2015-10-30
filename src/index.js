@@ -294,6 +294,141 @@ const Link = require('react-router').Link;
 
 const faker = require('faker');
 
+const Table = React.createClass({
+  getInitialState: function () {
+    return {
+      sortBy: 'date',
+      sortOrder: 1
+    };
+  },
+  getFieldByKey: function (key) {
+    let result;
+    this.props.fields.forEach(function (field) {
+      if (field.key === key) result = field;
+    });
+    return result;
+  },
+  sort: function (rows, sortBy, sortOrder) {
+    rows = rows.slice();
+    sortBy = sortBy || 'date';
+    sortOrder = sortOrder || 1;
+
+    const getValue = getFieldByKey(sortBy).raw;
+    return rows.sort(function (x, y) {
+      return (getValue(x) - getValue(y)) * sortOrder;
+    });
+  },
+  setSort: function (field) {
+    if (this.state.sortBy === field.key) {
+      this.setState({sortOrder: -this.state.sortOrder});
+    } else {
+      this.setState({sortBy: field.key, sortOrder: 1});
+    }
+  },
+  getCarrot: function (field) {
+    const selected = this.state.sortBy === field.key;
+    const icon = (selected && this.state.sortOrder === -1) ? 'ion-android-arrow-dropup' : 'ion-android-arrow-dropdown';
+    return <span className={'carrot ' + icon} />;
+  },
+  render: function () {
+
+    const rows = this.sort(this.props.data, this.state.sortBy, this.state.sortOrder);
+
+    return (<div className="table">
+      <table>
+        <thead>
+          <tr>
+            {this.props.fields.map(field => <th className={this.state.sortBy === field.key && 'selected'} onClick={() => this.setSort(field)}>{field.label} {this.getCarrot(field)}</th>)}
+            <th className="settings">
+              <button onClick={() => this.setState({showMenu: !this.state.showMenu})}>
+                <span className="ion-android-more-horizontal" />
+              </button>
+              <ul className="menu" hidden={!this.state.showMenu}>
+                <li><input type="checkbox" checked /> Date</li>
+                <li><input type="checkbox" checked /> Impressions</li>
+                <li><input type="checkbox" checked /> Clicks</li>
+                <li><input type="checkbox" checked /> CTR</li>
+                <li><input type="checkbox" checked /> Pinned</li>
+                <li><input type="checkbox" checked /> Blocked</li>
+                <li><input type="checkbox" /> Engagement</li>
+              </ul>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(row => {
+            return (<tr>
+           
+              {this.props.fields.map(field => <td>{field.format(row)}</td>)}
+              <td />
+            </tr>);
+          })}
+        </tbody>
+      </table>
+    </div>);
+  }
+});
+
+const Modal = React.createClass({
+  getInitialState: function () {
+    return {
+      visible: false,
+      loading: false
+    };
+  },
+  setVisibility: function (isVisible) {
+    this.setState({visible: isVisible});
+  },
+  onClick: function () {
+    const handler = this.props.onClick || () => {};
+    this.setState({loading: true});
+    handler(null, () => {
+      this.setState({
+        visible: false
+      });
+      // wait for fade to be done
+      setTimeout(() => {
+        this.setState({loading: false});
+      }, 200);
+    });
+  },
+  render: function () {
+    return (<div className={'modal-overlay' + (this.state.visible ? '' : ' hidden')}>
+      <div className="modal">
+        <div className="modal-body">
+          {this.props.children}
+        </div>
+        <div className="modal-footer">
+          <button onClick={this.onClick} className="btn action">
+            <span hidden={!this.state.loading} className="ion-ios-loop-strong spin" />
+            <span hidden={this.state.loading}>Generate new Report</span>
+          </button>
+        </div>
+      </div>
+    </div>);
+  }
+});
+
+const Select = React.createClass({
+  getInitialState: function () {
+    return {
+      value: this.props.initial || this.props.options[0].value
+    };
+  },
+  onChange: function (e) {
+    this.setState({value: e.target.value});
+  },
+  render: function () {
+    return (<span className="select">
+      <select value={this.state.value} onChange={this.onChange}>
+        {this.props.options.map(option => {
+          return <option key={option.value} value={option.value}>{option.label}</option>
+        })}
+      </select>
+    </span>);
+  }
+});
+
 const Home = React.createClass({
   render: function () {
     const campaigns = [];
@@ -302,13 +437,159 @@ const Home = React.createClass({
     }
     return (<div>
       <header>
-        <h1>Campaigns</h1>
+        <h1><div className="wrapper">Campaigns</div></h1>
       </header>
-      <main>
-        <ul className="campaign-list">
-          {campaigns.map(c => <li><Link to="campaigns">{c}</Link></li>)}
-        </ul>
+      <main className="wrapper" style={{paddingTop: 30}}>
+        <Table fields={fields} data={api.campaign().rows} />
       </main>
+      <Modal>
+        <h1>Edit report</h1>
+        <div className="report-settings">
+          <div className="section">
+            <div className="form-group"><label>Campaign</label>The Scene</div>
+          </div>
+          <div className="section row">
+            <div className="form-group half">
+              <label>Start Date</label>
+              <input type="date" className="input" value="2015-10-01" />
+            </div>
+            <div className="form-group half">
+            <label>Period</label><Select options={[
+              {label: 'Daily', value: 'daily'},
+              {label: 'Weekly', value: 'weekly'}
+            ]} initial="daily" /></div>
+          </div>
+          <div className="section">
+            <div className="row">
+              <div className="form-group half"><label>Locale</label><Select options={[
+                {label: 'All', value: 'all'},
+                {label: 'en-US', value: 'en-US'}
+              ]} initial="all" /></div>
+              <div className="form-group half"><label>Country</label><Select options={[
+                {label: 'All', value: 'all'},
+                {label: 'United States', value: 'US'},
+                {label: 'Canada', value: 'CA'}
+              ]} initial="all" /></div>
+            </div>
+            <div className="row">
+              <div className="form-group half"><label>Channel</label><Select options={[
+                {label: 'Desktop', value: 'all'},
+                {label: 'United States', value: 'US'},
+                {label: 'Canada', value: 'CA'}
+              ]} initial="all" /></div>
+              <div className="form-group half"><label>Type</label><Select options={[
+                {label: 'Suggested', value: 'all'},
+                {label: 'United States', value: 'US'},
+                {label: 'Canada', value: 'CA'}
+              ]} initial="all" /></div>
+            </div>
+          </div>
+          <div className="form-group">
+            <label>Categories</label>
+            <Select options={[
+              {label: 'All', value: 'all'},
+              {label: 'Fashion', value: '1'},
+              {label: 'Design', value: '2'},
+              {label: 'Auto', value: '3'}
+            ]} initial="all" />
+          </div>
+        </div>
+      </Modal>
+    </div>);
+  }
+});
+
+const Campaigns2 = React.createClass({
+  getInitialState: function () {
+    return {
+      campaign: api.campaign()
+    };
+  },
+  generateNewRows: function (data, cb) {
+    setTimeout(() => {
+      debugger;
+      this.setState({campaign: api.campaign()});
+      cb();
+    }, 1000);
+  },
+  render: function () {
+    return (<div>
+      <header>
+        <h1>
+          <div className="wrapper">
+            <Link className="breadcrumbs" to="/">Campaigns</Link> Condé Nast
+          </div>
+        </h1>
+      </header>
+      <main className="wrapper" style={{paddingTop: 30}}>
+        <div className="summary">
+          <div className="main-summary">
+            <h2>Daily report for January 1 – January 30, 2015</h2>
+            <p>
+              <strong>All</strong> countries, <strong>all</strong> locales, <strong>all</strong> categories.
+            </p>
+            <p><button onClick={() => this.refs.reportSettingsModal.setVisibility(true)} className="btn action">
+              <span className="ion-android-settings" /> Customize view
+            </button> <button className="btn normal">
+              <span className="ion-android-arrow-down" /> Download for excel
+            </button></p>
+          </div>
+        </div>
+        <Table fields={fields} data={this.state.campaign.rows} />
+      </main>
+      <Modal ref="reportSettingsModal" onClick={this.generateNewRows}>
+        <h1>Edit report</h1>
+        <div className="report-settings">
+          <div className="section">
+            <div className="form-group"><label>Campaign</label>The Scene</div>
+          </div>
+          <div className="section row">
+            <div className="form-group half">
+              <label>Start Date</label>
+              <input type="date" className="input" value="2015-10-01" />
+            </div>
+            <div className="form-group half">
+            <label>Period</label><Select options={[
+              {label: 'Daily', value: 'daily'},
+              {label: 'Weekly', value: 'weekly'}
+            ]} initial="daily" /></div>
+          </div>
+          <div className="section">
+            <div className="row">
+              <div className="form-group half"><label>Locale</label><Select options={[
+                {label: 'All', value: 'all'},
+                {label: 'en-US', value: 'en-US'}
+              ]} initial="all" /></div>
+              <div className="form-group half"><label>Country</label><Select options={[
+                {label: 'All', value: 'all'},
+                {label: 'United States', value: 'US'},
+                {label: 'Canada', value: 'CA'}
+              ]} initial="all" /></div>
+            </div>
+            <div className="row">
+              <div className="form-group half"><label>Channel</label><Select options={[
+                {label: 'Desktop', value: 'all'},
+                {label: 'United States', value: 'US'},
+                {label: 'Canada', value: 'CA'}
+              ]} initial="all" /></div>
+              <div className="form-group half"><label>Type</label><Select options={[
+                {label: 'Suggested', value: 'all'},
+                {label: 'United States', value: 'US'},
+                {label: 'Canada', value: 'CA'}
+              ]} initial="all" /></div>
+            </div>
+          </div>
+          <div className="form-group">
+            <label>Categories</label>
+            <Select options={[
+              {label: 'All', value: 'all'},
+              {label: 'Fashion', value: '1'},
+              {label: 'Design', value: '2'},
+              {label: 'Auto', value: '3'}
+            ]} initial="all" />
+          </div>
+        </div>
+      </Modal>
     </div>);
   }
 });
@@ -316,7 +597,7 @@ const Home = React.createClass({
 
 ReactDOM.render((<Router>
   <Route path="/" component={App}>
-    <Route path="campaigns" component={Campaign}/>
+    <Route path="campaigns" component={Campaigns2}/>
     <Route path="*" component={NotFound}/>
     <IndexRoute component={Home} />
   </Route>
