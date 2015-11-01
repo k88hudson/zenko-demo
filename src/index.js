@@ -91,25 +91,7 @@ const NotFound = React.createClass({
   }
 });
 
-const Select = React.createClass({
-  getInitialState: function () {
-    return {
-      value: this.props.initial || this.props.options[0].value
-    };
-  },
-  onChange: function (e) {
-    this.setState({value: e.target.value});
-  },
-  render: function () {
-    return (<span className="select">
-      <select value={this.state.value} onChange={this.onChange}>
-        {this.props.options.map(option => {
-          return <option key={option.value} value={option.value}>{option.label}</option>
-        })}
-      </select>
-    </span>);
-  }
-});
+const Select = require('./components/select/select');
 
 
 const Campaign = React.createClass({
@@ -220,6 +202,7 @@ const Campaign = React.createClass({
 ReactDOM.render((<Router>
   <Route path="/" component={App}>
     <Route path="campaign" component={Campaign}/>
+    <Route path="new" component={require('./pages/NewReport/NewReport')} />
     <Route path="*" component={NotFound}/>
     <IndexRoute component={require('./pages/home')} />
   </Route>
