@@ -1,50 +1,85 @@
 const faker = require('faker');
 const moment = require('moment');
+const {CAMPAIGNS, LOCALES, COUNTRY_CODES, OS, VERSIONS, CATEGORIES} = require('./fake');
 
-const LOCALES = ['en-US', 'en-GB', 'fr-FR', 'fr-CA', 'de-GR'];
-const COUNTRY_CODES = ['US', 'CA', 'IT', 'GR'];
-const OS = ['Windows', 'Windows 7', 'Windows 8', 'Linux', 'Mac OS X'];
-const VERSIONS = ['35.0', '34.0', '33.0', '25.0'];
-
-function generateDailyRow(date, options) {
-  options = options || {};
-  date = date || faker.date.past();
-
+function generateBasicStats() {
   const impressions = faker.random.number({min: 700000, max: 2000000});
-
   return {
-    date: date.format('YYYY-MM-DD'),
     impressions,
     clicks: faker.random.number({min: Math.floor(impressions * 0.002), max: Math.floor(impressions * 0.004)}),
     pinned: faker.random.number({min: 2, max: 350}),
     blocked: faker.random.number({min: 2000, max: 90000}),
-    locale: options.locale || faker.random.arrayElement(LOCALES),
-    country_code: options.country_code || faker.random.arrayElement(COUNTRY_CODES),
-    os: faker.random.arrayElement(OS),
-    browser: 'Firefox',
-    version: faker.random.arrayElement(VERSIONS),
-    month: date.month(),
-    week: date.week(),
-    year: date.year(),
-    blacklisted: false
   };
 }
 
-module.exports.campaign = function generateCampaign(title, date) {
-  title = title || faker.commerce.productName();
-  const rows = [];
-
-  const startDate = moment(date || faker.date.past());
-  for (let i = 0; i < 30; i++) {
-    rows.push(generateDailyRow(startDate));
-    startDate.add(1, 'days');
+function getDateRange(startDate, endDate, period) {
+  const VALID_PERIODS = ['day', 'week', 'month'];
+  const MAX_ROWS = 30;
+  if (VALID_PERIODS.indexOf(period) === -1) {
+    throw new Error(`${period} is not a valid period. Must be one of: ${VALID_PERIODS.join(', ')}`);
   }
-
-  return {
-    title,
-    rows,
-    startDate: startDate.format('YYYY-MM-DD')
+  startDate = moment(startDate, 'YYYY-MM-DD');
+  endDate = moment(endDate, 'YYYY-MM-DD');
+  const result = []
+  while (startDate <= endDate && result.length <= MAX_ROWS) {
+    startDate.startOf(period);
+    result.push(startDate.format('YYYY-MM-DD'));
+    startDate.add(1, period);
   }
+  return result;
 }
 
+function getBaseArray(options) {
+  const {field, period, startDate, endDate} = options;
+  let rows;
+  switch (field) {
+    case 'date':
+      rows = getDateRange(startDate, endDate, period);
+      break;
+    case 'locale':
+      rows = LOCALES;
+      break;
+    case 'category':
+      rows = CATEGORIES;
+      break;
+    case 'country':
+      rows = COUNTRY_CODES;
+      break;
+    default:
+      throw new Error('Sorry, you cannot group by ' + field);
+  }
+  return rows.map(value => {
+    let row = {};
+    row[field] = value;
+    return row;
+  });
+}
 
+module.exports.campaigns = function () {
+  return CAMPAIGNS;
+};
+
+module.exports.getRows = function getRows(options) {
+  const {name, groupBy, compareBy, period, startDate, endDate, filters} = options;
+  let rows;
+  if (compareBy) {
+    rows = getBaseArray({field: compareBy, period, startDate, endDate}).map(row => {
+      return Object.assign(row, {
+        rows: getBaseArray({field: groupBy, period, startDate, endDate}).map(r => {
+          return Object.assign(r, generateBasicStats());
+        })
+      });
+    });
+  } else {
+    rows = getBaseArray({field: groupBy, period, startDate, endDate}).map(row => {
+      return Object.assign(row, generateBasicStats());
+    });
+  }
+  return Object.assign({
+    name,
+    startDate,
+    endDate,
+    period,
+    rows
+  });
+};

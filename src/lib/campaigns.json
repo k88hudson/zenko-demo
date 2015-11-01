@@ -1,0 +1,6 @@
+[
+{"name":"MozDirectory","paused":false,"channel_id":1,"account_id":1,"start_date":"2015-09-30T16:06:55+00:00","end_date":"2015-10-30T16:06:55+00:00"},
+{"name":"MozSuggested","paused":false,"channel_id":3,"account_id":1,"start_date":"2015-09-10T16:06:55+00:00","end_date":"2015-10-23T16:06:55+00:00"},
+{"name":"BookingDirectory","paused":false,"channel_id":1,"account_id":2,"start_date":"2015-09-23T11:04:55+00:00","end_date":"2015-10-5T11:04:55+00:00"},
+{"name":"YahooSuggested","paused":false,"channel_id":3,"account_id":3,"start_date":"2015-10-03T14:04:55+00:00","end_date":"2015-11-20T10:04:55+00:00"}
+]
