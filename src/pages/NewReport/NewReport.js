@@ -1,6 +1,7 @@
 const React = require('react');
 const Select = require('../../components/select/select');
-const {CATEGORIES, CAMPAIGNS} = require('../../lib/fake');
+const {CATEGORIES, CAMPAIGNS, LOCALES} = require('../../lib/fake');
+const {Row, Third, Half, Quarter} = require('../../components/grid/grid');
 
 module.exports = React.createClass({
   getInitialState: function () {
@@ -70,20 +71,12 @@ module.exports = React.createClass({
               <h2>Create a report</h2>
 
               <h3>Campaign</h3>
-              <div className="row">
-                <div className="half">
+              <Row>
+                <Half>
                   <label>Name</label>
                   <Select options={CAMPAIGNS.map(c => {return {value: c.id, label: c.name}})} />
-                </div>
-                <div className="quarter">
-                  <label>Start Date</label>
-                  <input className="input" />
-                </div>
-                <div className="quarter">
-                  <label>End Date</label>
-                  <input className="input" />
-                </div>
-              </div>
+                </Half>
+              </Row>
 
               <h3>Compare by...</h3>
               <ul className="report-types">
@@ -102,26 +95,43 @@ module.exports = React.createClass({
                 })}
               </ul>
 
-              <h3>Period</h3>
-              <Select options={[
-                {value: 'daily', label: 'Daily'},
-                {valie: 'weekly', label: 'Weekly'}
-              ]} initial="daily" />
+              <h3>Date</h3>
+             
+              <Row>
+                <Third hidden={this.state.report_type !== 'date'}>
+                  <label>Period</label>
+                  <Select options={[
+                    {value: 'daily', label: 'Daily'},
+                    {valie: 'weekly', label: 'Weekly'}
+                  ]} initial="daily" />
+                </Third>
+                <Third>
+                  <label>Start Date</label>
+                  <input className="input" />
+                </Third>
+                <Third>
+                  <label>End Date</label>
+                  <input className="input" />
+                </Third>
+              </Row>
 
               <h3>Filters</h3>
               <div className="section">
-                <div className="row">
-                  <div className="form-group half"><label>Locale</label><Select options={[
-                    {label: 'All', value: 'all'},
-                    {label: 'en-US', value: 'en-US'}
-                  ]} initial="all" /></div>
-                  <div className="form-group half"><label>Country</label><Select options={[
-                    {label: 'All', value: 'all'},
-                    {label: 'United States', value: 'US'},
-                    {label: 'Canada', value: 'CA'}
-                  ]} initial="all" /></div>
-                </div>
-                <div className="row">
+                <Row>
+                  <Half className="form-group">
+                    <label>Locale</label>
+                    <Select options={LOCALES} initial="all" />
+                  </Half>
+                  <Half className="form-group half">
+                    <label>Country</label>
+                    <Select options={[
+                      {label: 'All', value: 'all'},
+                      {label: 'United States', value: 'US'},
+                      {label: 'Canada', value: 'CA'}
+                    ]} initial="all" />
+                  </Half>
+                </Row>
+                <Row>
                   <div className="form-group half"><label>Channel</label><Select options={[
                     {label: 'Desktop', value: 'all'},
                     {label: 'United States', value: 'US'},
@@ -132,9 +142,9 @@ module.exports = React.createClass({
                     {label: 'United States', value: 'US'},
                     {label: 'Canada', value: 'CA'}
                   ]} initial="all" /></div>
-                </div>
+                </Row>
               </div>
-              <div className="row">
+              <Row>
                 <div className="form-group">
                   <label>Categories <button onClick={() => this.setAllCategories(true)} className="btn btn-small">All</button> <button onClick={() => this.setAllCategories(false)} className="btn btn-small">Clear</button></label>
                   <ul className="checkbox-list">
@@ -146,7 +156,7 @@ module.exports = React.createClass({
                     })}
                   </ul>
                 </div>
-              </div>
+              </Row>
             </div>
           </div>
       </main>

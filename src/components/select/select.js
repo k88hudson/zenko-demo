@@ -10,9 +10,15 @@ module.exports = React.createClass({
     this.setState({value: e.target.value});
   },
   render: function () {
+    let options = this.props.options;
+
+    if (typeof this.props.options[0] !== 'object') {
+      options = options.map(o => { return {value: o, label: o} });
+    }
+
     return (<span className="select">
       <select value={this.state.value} onChange={this.onChange}>
-        {this.props.options.map(option => {
+        {options.map(option => {
           return <option key={option.value} value={option.value}>{option.label}</option>
         })}
       </select>
