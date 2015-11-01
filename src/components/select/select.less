@@ -1,6 +1,9 @@
 .select {
   display: inline-block;
+  position: relative;
+  border-radius: 2px;
   select {
+    position: relative;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -9,10 +12,27 @@
     font-weight: normal;
     color: inherit;
     padding: 8px 15px;
+    padding-right: 55px;
     background: white;
     border: 1px solid #DDD;
     border-radius: 2px;
     box-shadow: 0 3px 5px -3px fade(@darkgrey, 20%);
     width: 100%;
+    &:active,
+    &:focus {
+        outline: none;
+    }
+  }
+  .select-arrow {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    border-left: 1px solid #DDD;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
   }
 }

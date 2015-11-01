@@ -1,12 +1,24 @@
 const React = require('react');
 const Select = require('../../components/select/select');
-const {CATEGORIES} = require('../../lib/fake');
+const {CATEGORIES, CAMPAIGNS} = require('../../lib/fake');
 
 module.exports = React.createClass({
   getInitialState: function () {
     return {
-      report_type: 'date'
+      report_type: 'date',
+      categories: CATEGORIES.map(c => { return {value: c, checked: true}; })
     };
+  },
+  setCategory: function (category, checked) {
+    const categories = this.state.categories.slice();
+    categories.forEach(c => {
+      if (c.value === category) c.checked = checked;
+    });
+    this.setState({categories});
+  },
+  setAllCategories: function (checked) {
+    const categories = this.state.categories.map(c => Object.assign(c, {checked}));
+    this.setState({categories});
   },
   render: function () {
     const history = [
@@ -61,7 +73,7 @@ module.exports = React.createClass({
               <div className="row">
                 <div className="half">
                   <label>Name</label>
-                  <Select options={[{value: 'kale', label: 'Kale (Oct 1 – Oct 30, 2015)'}]} />
+                  <Select options={CAMPAIGNS.map(c => {return {value: c.id, label: c.name}})} />
                 </div>
                 <div className="quarter">
                   <label>Start Date</label>
@@ -124,9 +136,14 @@ module.exports = React.createClass({
               </div>
               <div className="row">
                 <div className="form-group">
-                  <label>Categories</label>
+                  <label>Categories <button onClick={() => this.setAllCategories(true)} className="btn btn-small">All</button> <button onClick={() => this.setAllCategories(false)} className="btn btn-small">Clear</button></label>
                   <ul className="checkbox-list">
-                    {CATEGORIES.map(c => <li key={c}><input type="checkbox" /> {c}</li>)}
+                    {this.state.categories.map(c => {
+                      return (<li key={c.value}>
+                        <input type="checkbox" checked={c.checked} onChange={(e) => this.setCategory(c.value, e.target.checked)} />
+                        {c.value}
+                      </li>);
+                    })}
                   </ul>
                 </div>
               </div>

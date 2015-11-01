@@ -16,6 +16,9 @@ module.exports = React.createClass({
           return <option key={option.value} value={option.value}>{option.label}</option>
         })}
       </select>
+      <span className="select-arrow">
+        <span className="ion-android-arrow-dropdown" />
+      </span>
     </span>);
   }
 });
