@@ -28,18 +28,23 @@
     "karma-sourcemap-loader": "^0.3.6",
     "karma-webpack": "^1.7.0",
     "live-server": "^0.8.1",
+    "lodash": "^3.10.1",
     "mocha": "^2.3.3",
     "npm-run-all": "^1.2.12",
     "webpack": "^1.12.2",
     "webpack-notifier": "^1.2.1"
   },
   "dependencies": {
+    "chart.js": "^1.0.2",
     "faker": "^3.0.1",
     "ionicons": "^2.0.1",
     "moment": "^2.10.6",
     "react": "^0.14.0",
     "react-autocomplete": "^0.1.4",
+    "react-chartjs": "^0.6.0",
     "react-dom": "^0.14.0",
-    "react-router": "^1.0.0-rc3"
+    "react-router": "^1.0.0-rc3",
+    "react-select": "^0.9.1",
+    "react-table": "k88hudson/react-table"
   }
 }

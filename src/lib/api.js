@@ -21,9 +21,20 @@ function getDateRange(startDate, endDate, period) {
   startDate = moment(startDate, 'YYYY-MM-DD');
   endDate = moment(endDate, 'YYYY-MM-DD');
   const result = []
+  let count = 1;
   while (startDate <= endDate && result.length <= MAX_ROWS) {
-    startDate.startOf(period);
-    result.push(startDate.format('YYYY-MM-DD'));
+    const obj = {
+      date: startDate.format('YYY-MM-DD')
+    };
+    if (period === 'day') {
+      obj.date_string = startDate.format('MMM DD');
+    } else if (period === 'week') {
+      obj.date_string = 'Week ' + count;
+    } else {
+      obj.date_string = startDate.format('MMMM');
+    }
+    result.push(obj);
+    count++;
     startDate.add(1, period);
   }
   return result;
@@ -48,6 +59,7 @@ function getBaseArray(options) {
     default:
       throw new Error('Sorry, you cannot group by ' + field);
   }
+  if (typeof rows[0] === 'object') return rows;
   return rows.map(value => {
     let row = {};
     row[field] = value;
@@ -57,6 +69,16 @@ function getBaseArray(options) {
 
 module.exports.campaigns = function () {
   return CAMPAIGNS;
+};
+
+module.exports.campaign = function (id) {
+  let result;
+  CAMPAIGNS.forEach(c => {
+    if (c.id === +id) {
+      result = c;
+    }
+  });
+  return result;
 };
 
 module.exports.getRows = function getRows(options) {

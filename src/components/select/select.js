@@ -1,23 +1,17 @@
 const React = require('react');
 
 module.exports = React.createClass({
-  getInitialState: function () {
-    return {
-      value: this.props.initial || this.props.options[0].value
-    };
-  },
-  onChange: function (e) {
-    this.setState({value: e.target.value});
-  },
+  displayName: 'Select',
   render: function () {
-    let options = this.props.options;
+    let options = this.props.options.slice();
 
     if (typeof this.props.options[0] !== 'object') {
       options = options.map(o => { return {value: o, label: o} });
     }
 
     return (<span className="select">
-      <select value={this.state.value} onChange={this.onChange}>
+      <select value={this.props.value} onChange={this.props.onChange}>
+        <option value="" disabled>{this.props.placeholder}</option>
         {options.map(option => {
           return <option key={option.value} value={option.value}>{option.label}</option>
         })}

@@ -1,0 +1,115 @@
+
+.home {
+  .section {
+    margin-bottom: 40px;
+  }
+  h2, h3 {
+    font-weight: normal;
+  }
+  h2 {
+    margin: 50px 0 30px;
+    font-size: 32px;
+  }
+  h3 {
+    font-size: 18px;
+    margin: 0 0 10px 0;
+    color: lighten(@darkgrey, 10%);
+  }
+  label {
+    color: lighten(@darkgrey, 30%);
+    margin-bottom: 8px;
+    font-weight: normal;
+    font-size: 14px;
+  }
+}
+// sidebar
+.sidebar {
+  min-height: 100%;
+  max-width: 300px;
+  border-right: 1px solid @greyborder;
+}
+.sidebar-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  li {
+    padding: 0;
+  }
+  a {
+    display: block;
+    border-bottom: 1px solid @greyborder;
+    padding: 10px 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: darken(@greyborder, 20%);
+    .name {
+      color: @darkgrey;
+    }
+    .notes {
+      margin-left: 5px;
+      font-size: 11px;
+    }
+  }
+  .last-updated {
+    display: block;
+    opacity: 0.5;
+    font-size: 0.8em;
+    margin-bottom: 5px;
+  }
+}
+.report-types {
+  .type {
+    &:last-child {
+      margin-right: 0;
+    }
+    text-align: center;
+    &.selected label {
+      border-color: @pink;
+      color: @pink;
+      margin: 0;
+      span.icon {
+        color: @pink;
+      }
+    }
+  } 
+  label {
+    display: block;
+    padding: 20px 30px;
+    border: 1px solid @greyborder;
+    border-radius: 3px;
+    span {vertical-align: middle;}
+    span.icon {
+      margin-right: 10px;
+      font-size: 30px;
+      color: darken(@grey, 25%);
+    }
+    input {
+      display: none;
+    }
+  }
+}
+
+.checkbox-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+  li {
+    padding: 0;
+    margin: 0;
+    display: inline-block;
+    width: 50%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    input {
+      margin-right: 10px;
+    }
+  }
+}
+
+.filters-container {
+  border: 1px solid #DDD;
+  padding: 20px;
+  border-radius: 3px;
+}
